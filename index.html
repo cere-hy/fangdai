@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="十一罗汉房贷计算器 v1.0.0：支持商业贷款、公积金贷款、组合贷款，等额本息与等额本金，贷款期限最长 480 期（40 年），利率手动输入。">
+<meta name="description" content="十一罗汉房贷计算器 v1.1.1：支持商业贷款、公积金贷款、组合贷款，等额本息与等额本金，贷款期限最长 480 期（40 年）；新增首套房公积金基础贷款额度测算。">
 <meta name="theme-color" content="#F3A04C">
 <meta name="color-scheme" content="light dark">
-<title>十一罗汉房贷计算器 v1.0.0</title>
+<title>十一罗汉房贷计算器 v1.1.1</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23F3A04C'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%23fff'%3E11%3C/text%3E%3C/svg%3E">
 <style>
 :root{
@@ -15,7 +15,8 @@
 --primary-foreground:#fff;--text-primary:rgba(0,0,0,.8);--text-secondary:rgba(0,0,0,.5);
 --text-tertiary:rgba(0,0,0,.35);--intensity-3:rgba(0,0,0,.03);--intensity-4:rgba(0,0,0,.04);
 --intensity-6:rgba(0,0,0,.06);--intensity-8:rgba(0,0,0,.08);--intensity-12:rgba(0,0,0,.12);
---intensity-20:rgba(0,0,0,.2);--input-shadow:rgba(0,0,0,.08)
+--intensity-20:rgba(0,0,0,.2);--input-shadow:rgba(0,0,0,.08);
+--danger-text:#C0392B;--warn-text:#9A6A00;--ok-text:#2E8A2C
 }
 @media(prefers-color-scheme:dark){
 :root{
@@ -24,7 +25,8 @@
 --text-tertiary:rgba(255,255,255,.35);--intensity-3:rgba(255,255,255,.03);
 --intensity-4:rgba(255,255,255,.04);--intensity-6:rgba(255,255,255,.06);
 --intensity-8:rgba(255,255,255,.08);--intensity-12:rgba(255,255,255,.12);
---intensity-20:rgba(255,255,255,.2);--input-shadow:rgba(0,0,0,.28)
+--intensity-20:rgba(255,255,255,.2);--input-shadow:rgba(0,0,0,.28);
+--danger-text:#FF9A90;--warn-text:#F0B429;--ok-text:#7BD97A
 }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -63,6 +65,7 @@ outline:none;font-variant-numeric:tabular-nums;transition:border-color .15s}
 .inp:focus{border-color:var(--primary)}
 .unit{font-size:12px;color:var(--text-secondary);min-width:26px}
 .tip{font-size:11px;color:var(--text-tertiary);text-align:right;padding:2px 0 4px}
+.tip.l{text-align:left;padding-left:2px}
 .btn{width:100%;height:44px;border:0;border-radius:12px;background:var(--primary);
 color:var(--primary-foreground);font-size:14px;font-weight:500;margin:6px 0 4px;transition:background .15s}
 .btn:hover{background:var(--accent)}
@@ -140,6 +143,115 @@ font-variant-numeric:tabular-nums;color:var(--text-primary)}
 .foot{max-width:480px;margin:18px auto 0;text-align:center;font-size:11px;
 color:var(--text-tertiary);line-height:1.7}
 .foot a{color:var(--primary);text-decoration:none}
+
+/* ========== 首套房公积金额度测算 ========== */
+.ptitle{flex:1;text-align:center;font-size:13.5px;font-weight:600;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.entry{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+background:linear-gradient(135deg,rgba(243,160,76,.12),rgba(243,160,76,.03));
+border:.5px solid rgba(243,160,76,.38);border-radius:14px;padding:12px 14px;
+margin-bottom:10px;color:inherit;font-family:inherit;transition:border-color .15s}
+.entry:hover{border-color:var(--primary)}
+.entry:active{opacity:.9}
+.entry-ic{width:34px;height:34px;border-radius:10px;background:var(--primary);
+color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;
+justify-content:center;flex-shrink:0}
+.entry-tx{flex:1;min-width:0}
+.entry-tx b{display:block;font-size:13.5px;font-weight:600;margin-bottom:2px}
+.entry-tx span{display:block;font-size:11px;color:var(--text-secondary)}
+.entry-ar{font-size:17px;color:var(--text-tertiary);flex-shrink:0}
+.entry+.card{margin-top:0}
+.notice{background:rgba(230,92,83,.09);border:.5px solid rgba(230,92,83,.32);
+border-radius:10px;padding:9px 12px;font-size:11.5px;line-height:1.65;
+color:var(--danger-text);margin-bottom:10px}
+.notice b{font-weight:600}
+.notice ul{margin:3px 0 0;padding-left:16px}
+.sec-t{font-size:12px;font-weight:600;color:var(--primary);padding:0 2px 7px}
+.kvs{background:var(--card-bg);border:.5px solid var(--intensity-8);border-radius:14px;
+padding:2px 14px;margin-bottom:10px}
+.kv{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+padding:9px 0;border-bottom:.5px solid var(--intensity-4);font-size:12.5px}
+.kv:last-child{border-bottom:0}
+.kv .k{color:var(--text-secondary);flex-shrink:0}
+.kv .v{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;word-break:break-all}
+.kv .v.dim{font-weight:500;color:var(--text-secondary)}
+.kv .v em{font-style:normal;font-weight:500;font-size:10.5px;color:var(--warn-text);
+margin-left:4px;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:11px;padding:3px 9px;border-radius:999px;line-height:1.5;
+background:var(--intensity-6);color:var(--text-secondary)}
+.chip.warn{background:rgba(235,164,0,.15);color:var(--warn-text);font-weight:500}
+.chip.err{background:rgba(230,92,83,.13);color:var(--danger-text);font-weight:500}
+.chip.ok{background:rgba(64,180,62,.13);color:var(--ok-text);font-weight:500}
+.snapshot{font-size:10.5px;color:var(--text-tertiary);line-height:1.7;
+padding:0 4px 4px;word-break:break-all}
+/* 口径差异说明：整行左对齐，避免长句在 kv 行里被 nowrap 撑破 */
+.refnote{font-size:11px;line-height:1.7;color:var(--text-secondary);
+background:var(--card-bg);border:.5px solid var(--intensity-8);
+border-left:2px solid var(--warning);border-radius:12px;
+padding:9px 12px;margin:-2px 0 10px}
+.refnote b{color:var(--text-primary);font-weight:600}
+
+/* 结果页：两路取低 */
+.paths{background:var(--card-bg);border:.5px solid var(--intensity-8);border-radius:14px;
+padding:12px 14px 11px;margin-bottom:10px}
+.path{display:flex;align-items:center;gap:9px;padding:5px 0}
+.path .pk{font-size:11.5px;color:var(--text-secondary);width:52px;flex-shrink:0}
+.path.on .pk{color:var(--text-primary);font-weight:600}
+.path .pb{flex:1;height:20px;border-radius:5px;background:var(--intensity-4);overflow:hidden;min-width:30px}
+.path .pb i{display:block;height:100%;border-radius:5px;background:var(--intensity-12);
+transition:width .55s cubic-bezier(.22,1,.36,1)}
+.path.on .pb i{background:linear-gradient(90deg,var(--primary),#F8C489)}
+.path .pv{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;
+width:62px;text-align:right;flex-shrink:0;color:var(--text-secondary)}
+.path.on .pv{color:var(--primary);font-size:13px}
+.pf{font-size:11px;color:var(--text-secondary);padding-top:6px;margin-top:4px;
+border-top:.5px solid var(--intensity-4);line-height:1.5}
+.pf b{color:var(--primary);font-weight:600}
+
+/* 结果页：年限推导链 */
+.chain{background:var(--card-bg);border:.5px solid var(--intensity-8);border-radius:14px;
+padding:2px 14px;margin-bottom:10px}
+.ch{padding:10px 0;border-bottom:.5px solid var(--intensity-4)}
+.ch:last-child{border-bottom:0}
+.ch-h{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600}
+.ch-n{width:16px;height:16px;border-radius:50%;background:var(--intensity-8);
+color:var(--text-secondary);font-size:10px;line-height:1;display:flex;
+align-items:center;justify-content:center;flex-shrink:0;font-variant-numeric:tabular-nums}
+.ch-h .ch-v{margin-left:auto;color:var(--primary);font-variant-numeric:tabular-nums;font-size:13px}
+.ch-b{padding-left:23px;margin-top:4px}
+.ch-l{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;
+color:var(--text-secondary);padding:2px 0;font-variant-numeric:tabular-nums;line-height:1.55}
+.ch-l span:last-child{text-align:right;flex-shrink:0}
+.ch-l.win{color:var(--text-primary);font-weight:600;padding-top:4px}
+.ch-l.win span:last-child{color:var(--primary)}
+.ch.final{background:linear-gradient(90deg,rgba(243,160,76,.11),rgba(243,160,76,0));
+margin:0 -14px;padding:10px 14px;border-radius:0 0 13px 13px}
+.ch.final .ch-n{background:var(--primary);color:#fff}
+.kv .v em.hit{color:var(--primary)}
+.rise{animation:rise .34s cubic-bezier(.22,1,.36,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+#viewQuota .row .lbl{flex:0 0 76px;min-width:76px}
+#viewQuota .row.cpt .lbl{flex:0 0 92px;min-width:92px}
+#qMode .opt{margin-right:9px}
+#spouseBox .row:last-child{border-bottom:0}
+#qCfgBox .row:last-child{border-bottom:0}
+.row.cpt{min-height:40px;padding:7px 0}
+.card-h .sn{display:inline-flex;align-items:center;justify-content:center;
+width:15px;height:15px;border-radius:4px;background:var(--primary);color:#fff;
+font-size:9.5px;font-weight:600;font-style:normal;margin-right:6px;
+position:relative;top:-1px;letter-spacing:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px 14px;padding:10px 0;
+border-bottom:.5px solid var(--intensity-4)}
+.g2 .cell{min-width:0}
+.g2 .ck{display:block;font-size:11px;color:var(--text-secondary);margin-bottom:4px}
+.g2 .cw{display:flex;align-items:center;gap:4px}
+.g2 .cw .inp{flex:1;min-width:0;height:32px;font-size:12.5px;padding:0 8px}
+.g2 .cu{font-size:11px;color:var(--text-secondary);flex-shrink:0}
+input[type=date].inp{color-scheme:light dark;font-variant-numeric:tabular-nums}
 @media(max-width:360px){
 .hd h1{font-size:16px}
 .big-v{font-size:24px}
@@ -152,8 +264,15 @@ color:var(--text-tertiary);line-height:1.7}
 <section id="viewForm">
 <div class="hd">
 <h1>十一罗汉房贷计算器</h1>
-<p><span class="ver">v1.0.0</span>支持最长 480 期（40 年）</p>
+<p><span class="ver">v1.1.1</span>支持最长 480 期（40 年）</p>
 </div>
+
+<button class="entry" id="goQuota" type="button">
+<span class="entry-ic">公</span>
+<span class="entry-tx"><b>首套房公积金额度测算</b>
+<span>先算基础可贷额度 · 多路取低 · 输出限制项</span></span>
+<span class="entry-ar">›</span>
+</button>
 
 <div class="card">
 <div class="row"><span class="lbl">还款方式</span><div class="opts" id="gMethod">
@@ -229,10 +348,134 @@ color:var(--text-tertiary);line-height:1.7}
 <div class="card" style="padding:4px 14px 10px" id="years"></div>
 <div style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:4px 0 10px" id="dtFoot"></div>
 </section>
+
+<section id="viewQuota" class="hidden">
+<div class="topbar"><button class="back" id="bkQ" type="button" aria-label="返回首页">‹</button>
+<div class="ptitle">首套房公积金额度测算</div><div style="width:30px"></div></div>
+
+<div class="notice hidden" id="qErr"></div>
+
+<div class="card">
+<div class="card-h"><i class="sn">1</i>主贷人信息</div>
+<div class="row"><span class="lbl">出生日期</span><input id="qBirth" class="inp" type="text" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="19580101" aria-label="主贷人出生日期，可直接输入 8 位数字"><span class="unit" aria-hidden="true"></span></div>
+<div class="tip l">直接敲 8 位数字，如 19580101；也接受 1958-01-01</div>
+<div class="row"><span class="lbl">性别</span><div class="opts" id="qGender">
+<button class="opt on" data-v="male" type="button"><i class="dot"></i>男</button>
+<button class="opt" data-v="female" type="button"><i class="dot"></i>女</button>
+</div></div>
+<div class="row hidden" id="rowFClass"><span class="lbl">参保身份</span><div class="opts" id="qFClass">
+<button class="opt" data-v="mg" type="button"><i class="dot"></i>管理技术岗</button>
+<button class="opt" data-v="wg" type="button"><i class="dot"></i>工人岗</button>
+</div></div>
+<div class="tip l hidden" id="tipFClass">按单位参保登记的身份填写，决定延迟退休档位</div>
+<div class="row"><span class="lbl">公积金月收入</span><input id="qIncome" class="inp" type="text" inputmode="decimal" aria-label="公积金月收入即缴存基数，单位元"><span class="unit">元</span></div>
+<div class="tip l">填公积金系统缴存基数，不是到手工资</div>
+<div class="row"><span class="lbl">基本余额</span><input id="qBase" class="inp" type="text" inputmode="decimal" aria-label="基本公积金余额，单位元"><span class="unit">元</span></div>
+<div class="row"><span class="lbl">补充余额</span><input id="qSupp" class="inp" type="text" inputmode="decimal" placeholder="无补充填 0" aria-label="补充公积金余额，单位元"><span class="unit">元</span></div>
+</div>
+
+<div class="card">
+<div class="card-h"><i class="sn">2</i>额度合并</div>
+<div class="row"><span class="lbl">计算方式</span><div class="opts" id="qCouple">
+<button class="opt on" data-v="0" type="button"><i class="dot"></i>单人申请</button>
+<button class="opt" data-v="1" type="button"><i class="dot"></i>夫妻合并</button>
+</div></div>
+<div id="spouseBox" class="hidden">
+<div class="row"><span class="lbl">配偶月收入</span><input id="qSpIncome" class="inp" type="text" inputmode="decimal" placeholder="缴存基数"><span class="unit">元</span></div>
+<div class="row"><span class="lbl">配偶基本余额</span><input id="qSpBase" class="inp" type="text" inputmode="decimal" placeholder="可填 0"><span class="unit">元</span></div>
+<div class="row"><span class="lbl">配偶补充余额</span><input id="qSpSupp" class="inp" type="text" inputmode="decimal" placeholder="无补充填 0"><span class="unit">元</span></div>
+</div>
+<div class="tip l">年限只看主贷人，配偶仅合并月收入与余额</div>
+</div>
+
+<div class="card">
+<div class="card-h"><i class="sn">3</i>房屋信息</div>
+<div class="row"><span class="lbl">房屋类型</span><div class="opts" id="qHouse">
+<button class="opt on" data-v="new" type="button"><i class="dot"></i>一手房</button>
+<button class="opt" data-v="old" type="button"><i class="dot"></i>二手房</button>
+</div></div>
+<div class="row hidden" id="rowBuilt"><span class="lbl">竣工年份</span><input id="qBuilt" class="inp" type="number" min="1900" step="1" inputmode="numeric" placeholder="如 2008"><span class="unit">年</span></div>
+<div class="tip l">房屋总价、首付、成数不在本模块，人工另算</div>
+</div>
+
+<div class="list" style="margin-bottom:10px">
+<button class="li" id="qCfgToggle" type="button">测算参数（高级，一般无需修改）<span class="ar" id="qCfgAr">›</span></button>
+</div>
+
+<div class="card hidden" id="qCfgBox">
+<div class="card-h">系统参数</div>
+<div class="row cpt"><span class="lbl">贷款受理日</span><input id="qAccept" class="inp" type="text" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="20261126" aria-label="贷款受理日，可填未来日期，可直接输入 8 位数字"><span class="unit" aria-hidden="true"></span></div>
+<div class="tip l">可填未来日期：受理在签约之后、测算也就发生在受理之前；支持 8 位数字</div>
+<div class="row cpt"><span class="lbl">年限口径</span><div class="opts" id="qMode">
+<button class="opt on" data-v="dual" type="button"><i class="dot"></i>双路取短</button>
+<button class="opt" data-v="cap" type="button"><i class="dot"></i>仅硬顶</button>
+<button class="opt" data-v="retire" type="button"><i class="dot"></i>仅退休表</button>
+</div></div>
+<div class="row cpt"><span class="lbl">男性年龄上限</span><input id="qCapM" class="inp" type="number" min="50" max="80" step="1" inputmode="numeric"><span class="unit">岁</span></div>
+<div class="row cpt"><span class="lbl">女性年龄上限</span><input id="qCapF" class="inp" type="number" min="50" max="80" step="1" inputmode="numeric"><span class="unit">岁</span></div>
+<div class="row cpt"><span class="lbl">退休后延年数</span><input id="qPlus" class="inp" type="number" min="0" max="15" step="1" inputmode="numeric"><span class="unit">年</span></div>
+<div class="row cpt"><span class="lbl">最长贷款年限</span><input id="qLongest" class="inp" type="number" min="1" max="40" step="1" inputmode="numeric"><span class="unit">年</span></div>
+<div class="g2">
+<div class="cell"><label class="ck" for="qBaseMult">基本倍数</label><div class="cw"><input id="qBaseMult" class="inp" type="number" min="1" step="1"><span class="cu">倍</span></div></div>
+<div class="cell"><label class="ck" for="qSuppMult">补充倍数</label><div class="cw"><input id="qSuppMult" class="inp" type="number" min="1" step="1"><span class="cu">倍</span></div></div>
+</div>
+<div class="g2">
+<div class="cell"><label class="ck" for="qBaseCapS">基本·单人</label><div class="cw"><input id="qBaseCapS" class="inp" type="number" min="1" step="1"><span class="cu">万</span></div></div>
+<div class="cell"><label class="ck" for="qSuppCapS">补充·单人</label><div class="cw"><input id="qSuppCapS" class="inp" type="number" min="1" step="1"><span class="cu">万</span></div></div>
+</div>
+<div class="g2">
+<div class="cell"><label class="ck" for="qBaseCapC">基本·夫妻</label><div class="cw"><input id="qBaseCapC" class="inp" type="number" min="1" step="1"><span class="cu">万</span></div></div>
+<div class="cell"><label class="ck" for="qSuppCapC">补充·夫妻</label><div class="cw"><input id="qSuppCapC" class="inp" type="number" min="1" step="1"><span class="cu">万</span></div></div>
+</div>
+<div class="g2">
+<div class="cell"><label class="ck" for="qRatio">还款能力系数</label><div class="cw"><input id="qRatio" class="inp" type="number" min="1" max="100" step="1"><span class="cu">%</span></div></div>
+<div class="cell"><label class="ck" for="qHouseBase">房龄年限基准</label><div class="cw"><input id="qHouseBase" class="inp" type="number" min="20" max="70" step="1"><span class="cu">年</span></div></div>
+</div>
+<div class="row cpt"><span class="lbl">取整粒度</span><div class="opts" id="qRound">
+<button class="opt" data-v="100" type="button"><i class="dot"></i>百元</button>
+<button class="opt on" data-v="1000" type="button"><i class="dot"></i>千元</button>
+<button class="opt" data-v="10000" type="button"><i class="dot"></i>万元</button>
+</div></div>
+<div class="tip"><span id="qReset" style="color:var(--primary);cursor:pointer">恢复默认参数</span></div>
+</div>
+
+<button class="btn" id="qCalc" type="button">测算基础可贷额度</button>
+<div style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:2px 0 12px;line-height:1.6">
+只做首套、只做基础额度；多孩 ×1.2、绿色建筑 ×1.15 等上浮由人工另乘
+</div>
+</section>
+
+<section id="viewQRes" class="hidden">
+<div class="topbar"><button class="back" id="bkQR" type="button" aria-label="返回测算">‹</button>
+<div class="ptitle">额度测算结果</div><div style="width:30px"></div></div>
+
+<div class="big">
+<div class="big-k">首套房基础公积金可贷额度</div>
+<div class="big-v"><span class="u">¥</span><span id="qrAmt">0</span><span class="u" style="margin:0 0 0 3px">万</span></div>
+<div class="hint" id="qrSub">--</div>
+<div class="chips" id="qrFlags"></div>
+</div>
+
+<div class="sec-t">两路取低</div>
+<div class="paths" id="qrPaths"></div>
+
+<div class="sec-t">年限从哪来</div>
+<div class="chain" id="qrChain"></div>
+
+<div class="sec-t">额度明细</div>
+<div class="kvs" id="qrKv2"></div>
+
+<div class="sec-t">口径提示</div>
+<div class="kvs" id="qrKv3"></div>
+<div class="refnote hidden" id="qrRef"></div>
+<div class="snapshot" id="qrSnap"></div>
+
+<button class="btn" id="qrAgain" type="button" style="margin-top:4px">返回修改条件</button>
+</section>
 </div>
 
 <div class="foot">
-十一罗汉房贷计算器 v1.0.0 · 纯前端计算，数据不上传<br>
+十一罗汉房贷计算器 v1.1.1 · 纯前端计算，数据不上传<br>
 计算结果仅供参考，实际以银行审批为准
 </div>
 
@@ -463,7 +706,7 @@ function renderDetail(){
       '<div class="yr-c">›</div></button><div class="yr-b hidden"></div></div>';
   }
   el('years').innerHTML=html;
-  el('dtFoot').textContent='起贷月 '+(sm+1)+' 月，共 '+st.mg.n+' 期；点击年份展开逐月明细 · 十一罗汉 v1.0.0';
+  el('dtFoot').textContent='起贷月 '+(sm+1)+' 月，共 '+st.mg.n+' 期；点击年份展开逐月明细 · 十一罗汉 v1.1.1';
   var nodes=el('years').querySelectorAll('.yr');
   for(i=0;i<nodes.length;i++){
     (function(node){
@@ -478,12 +721,23 @@ function renderDetail(){
   }
 }
 
+var VIEWS=['viewForm','viewResult','viewDetail','viewQuota','viewQRes'];
 function show(v){
-  el('viewForm').classList.toggle('hidden',v!=='viewForm');
-  el('viewResult').classList.toggle('hidden',v!=='viewResult');
-  el('viewDetail').classList.toggle('hidden',v!=='viewDetail');
+  for(var i=0;i<VIEWS.length;i++){el(VIEWS[i]).classList.toggle('hidden',VIEWS[i]!==v)}
   window.scrollTo(0,0);
 }
+/* 安卓物理返回键的统一入口：逐层退回；已在主页面时返回 false 让原生退出 */
+function back(){
+  var cur=null;
+  for(var i=0;i<VIEWS.length;i++){
+    if(!el(VIEWS[i]).classList.contains('hidden')){cur=VIEWS[i];break}
+  }
+  if(cur==='viewQRes'){show('viewQuota');return true}
+  if(cur==='viewDetail'){show('viewResult');return true}
+  if(cur==='viewResult'||cur==='viewQuota'){show('viewForm');return true}
+  return false;
+}
+window.App={show:show,back:back};
 function setMethod(v){
   S.method=v;setGroup('gMethod',v);
   if(state.cur)renderResult();
@@ -529,6 +783,558 @@ for(i=0;i<accs.length;i++){
 }
 
 syncForm();
+})();
+</script>
+<script>
+/* ============================================================
+   首套房公积金基础贷款额度测算
+   口径：多路并行 → 取最低 → 输出限制项；只做首套、只做基础额度
+   ============================================================ */
+(function(){
+"use strict";
+var el=function(id){return document.getElementById(id)};
+var show=window.App.show;
+
+/* ---------- 1. 配置 ---------- */
+/* 默认值：上限以「万元」存放，系数以「%」存放，读取时换算 */
+var DEF={capMale:68,capFemale:63,plus:5,longest:30,baseMult:30,suppMult:10,
+  baseCapS:100,baseCapC:200,suppCapS:20,suppCapC:40,ratio:40,houseBase:50,roundTo:1000};
+var DEF_MODE='dual';
+var PARAM_VER='v1.1.1-q2026.11';
+
+/* 过渡期区间：判定退休表与「参保身份」字段显示共用这一份对象 */
+var TRANS={
+  male:{f:[1965,1,1],t:[1976,8,31]},
+  mg:{f:[1970,1,1],t:[1981,8,31]},
+  wg:{f:[1975,1,1],t:[1984,10,31]}
+};
+/* 女性参保身份的显示区间 = 女管理岗起点 ~ 女工人岗终点 */
+var CLASS_RANGE={f:TRANS.mg.f,t:TRANS.wg.t};
+
+var G={gender:'male',fclass:null,couple:0,house:'new',mode:DEF_MODE,round:1000};
+
+/* ---------- 2. 日期工具（不使用 Date 做运算，避免时区与溢出） ---------- */
+function p2(n){return (n<10?'0':'')+n}
+function dstr(d){return d.y+'-'+p2(d.m)+'-'+p2(d.d)}
+function dim(y,m){return new Date(y,m,0).getDate()}
+function addMonths(d,n){
+  var t=d.y*12+(d.m-1)+n,y=Math.floor(t/12),m=t-y*12+1;
+  return {y:y,m:m,d:Math.min(d.d,dim(y,m))};
+}
+function addYears(d,n){
+  var y=d.y+n;
+  return {y:y,m:d.m,d:Math.min(d.d,dim(y,d.m))};
+}
+function cmp(a,b){
+  if(a.y!==b.y)return a.y-b.y;
+  if(a.m!==b.m)return a.m-b.m;
+  return a.d-b.d;
+}
+/* 整年差：受理日 + N 年 ≤ 到期日 的最大 N（不做逐月累加） */
+function fullYears(from,to){
+  var n=to.y-from.y;
+  while(n>0&&cmp(addYears(from,n),to)>0)n--;
+  while(cmp(addYears(from,n+1),to)<=0)n++;
+  return n;
+}
+function parseD(s){
+  if(!s)return null;
+  /* 快捷输入：19580101 / 1958/1/1 / 1958.01.01 / 全角数字，统一成 - 分隔 */
+  s=String(s).trim()
+    .replace(/[\uFF01-\uFF5E]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)})
+    .replace(/[\u3000\s]/g,'');
+  if(/^\d{8}$/.test(s))s=s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
+  else if(/^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}$/.test(s))s=s.replace(/[-/.]/g,'-');
+  var a=s.split('-');
+  if(a.length!==3)return null;
+  var y=+a[0],m=+a[1],d=+a[2];
+  if(!(y>=1900&&y<=2200&&m>=1&&m<=12&&d>=1))return null;
+  if(d>dim(y,m))return null;          /* 2-30、4-31、平年 2-29 一律拦截 */
+  return {y:y,m:m,d:d};
+}
+function today(){var d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+function inRange(d,r){
+  return cmp(d,{y:r.f[0],m:r.f[1],d:r.f[2]})>=0&&cmp(d,{y:r.t[0],m:r.t[1],d:r.t[2]})<=0;
+}
+
+/* ---------- 3. 退休月数公式（月为唯一单位，不硬编码大表） ---------- */
+function retireMonths(gender,fclass,y,m){
+  var ym=y*12+m,base,s,step,cap;
+  if(gender==='male'){base=60*12;s=1965*12+1;step=4;cap=36;}
+  else if(fclass==='mg'){base=55*12;s=1970*12+1;step=4;cap=36;}
+  else{base=50*12;s=1975*12+1;step=2;cap=60;}
+  var k=Math.floor((ym-s)/step)+1;
+  if(k<0)k=0;
+  if(k>cap)k=cap;
+  return base+k;
+}
+function isTrans(d,gender,fclass){
+  if(gender==='male')return inRange(d,TRANS.male);
+  return inRange(d,fclass==='mg'?TRANS.mg:TRANS.wg);
+}
+
+/* ---------- 4. 核心计算 ---------- */
+function compute(i,cf){
+  var o={};
+  var capY=i.gender==='male'?cf.capMale:cf.capFemale;
+  var capEnd=addYears(i.birth,capY);
+  var trans=isTrans(i.birth,i.gender,i.fclass);
+
+  /* 分段上限：先算出来，出错时结果页也能显示口径 */
+  var baseCap=i.couple?cf.baseCapC:cf.baseCapS;
+  var suppCap=i.couple?cf.suppCapC:cf.suppCapS;
+  o.baseCap=baseCap;o.suppCap=suppCap;o.upCap=baseCap+suppCap;
+
+  /* 退休月数对所有出生日期都可算：公式自带区间外收敛
+     （区间之前 → 起始年龄，区间之后 → 封顶年龄），
+     所以「是否已过退休年龄」对非过渡期人群同样能判定。
+     女性未选参保身份时落到工人岗（退休更早）分支，属偏保守方向。 */
+  var rmAll=retireMonths(i.gender,i.fclass,i.birth.y,i.birth.m);
+  var retireAt=addMonths(i.birth,rmAll);
+
+  var rm=null,rEnd=null;
+  if(trans||cf.mode==='retire'){
+    rm=rmAll;
+    rEnd=addMonths(i.birth,rm+cf.plus*12);
+  }
+  var end;
+  if(cf.mode==='retire')end=rEnd;
+  else if(cf.mode==='cap')end=capEnd;
+  else end=(trans&&cmp(rEnd,capEnd)<0)?rEnd:capEnd;
+
+  o.trans=trans;o.rm=rm;o.rEnd=rEnd;o.capEnd=capEnd;o.end=end;o.capY=capY;o.mode=cf.mode;
+  o.retireAt=retireAt;o.rmAll=rmAll;
+  /* 退休路参考到期日：非过渡期不参与取短，但结果页要能对照，
+     否则「退休 55 ＋ 5 年」与「硬顶 63」差 3 年会说不清 */
+  o.rEndAll=addMonths(i.birth,rmAll+cf.plus*12);
+
+  /* 房龄可贷年限 */
+  var hy,hAge=null;
+  if(i.houseType==='new'){
+    hy=cf.longest;
+  }else{
+    hAge=i.accept.y-i.builtYear;
+    if(hAge<0){o.err='房龄为负：竣工年份晚于受理年份，请检查输入。';o.errType='input';
+      o.houseY=0;o.finalY=0;o.ageYraw=null;return o}
+    if(hAge<20)hy=cf.longest;
+    else if(hAge<35)hy=cf.houseBase-hAge;
+    else hy=15;
+  }
+  o.houseY=hy;o.houseAge=hAge;
+
+  /* 资格闸门：受理日已到/已过法定退休日 → 不可贷，额度直接为 0。
+     与年限口径开关无关：这是资格问题，不是年限算法问题。 */
+  if(cmp(i.accept,retireAt)>=0){
+    o.err='申请人已于 '+dstr(retireAt)+' 达到法定退休年龄（退休 '+
+      Math.floor(rmAll/12)+' 岁'+(rmAll%12?' '+(rmAll%12)+' 个月':'')+'），无法申请公积金贷款';
+    o.errType='overage';
+    o.ageYraw=0;o.ageY=0;o.finalY=0;o.amt=0;
+    o.rm=rmAll;o.rEnd=addMonths(i.birth,rmAll+cf.plus*12);o.end=retireAt;
+    return o;
+  }
+
+  /* 年龄可贷年限 */
+  var ay=fullYears(i.accept,end);
+  o.ageYraw=ay;
+  if(ay<=0){
+    o.err='已超出可贷年龄（'+dstr(end)+' 早于受理日），无法申请公积金贷款。';
+    o.errType='input';
+    o.ageY=0;o.finalY=0;o.amt=0;return o;
+  }
+  o.ageY=Math.min(ay,cf.longest);
+  o.ageCapped=ay>cf.longest;
+
+  /* 年限必须先落到唯一值，再进还款能力公式 */
+  var fy=Math.max(1,Math.min(o.ageY,hy));
+  o.finalY=fy;
+
+  /* 余额路：基本段与补充分段计算、各自封顶，再相加 */
+  var tBase=i.baseBal+(i.couple?i.spBaseBal:0);
+  var tSupp=i.suppBal+(i.couple?i.spSuppBal:0);
+  var baseLoan=Math.min(tBase*cf.baseMult,baseCap);
+  var suppLoan=Math.min(tSupp*cf.suppMult,suppCap);
+  var balRoute=baseLoan+suppLoan;
+
+  /* 还款能力路（按分计算，避免浮点误差） */
+  var inc=i.income+(i.couple?i.spIncome:0);
+  var ability=Math.round(inc*100*cf.ratio*12*fy)/100;
+
+  var raw=Math.round(Math.min(balRoute,ability)*100)/100;
+  var amt=Math.floor(raw/cf.roundTo+1e-9)*cf.roundTo;
+
+  o.couple=i.couple;o.tBase=tBase;o.tSupp=tSupp;o.baseCap=baseCap;o.suppCap=suppCap;
+  o.baseLoan=baseLoan;o.suppLoan=suppLoan;o.balRoute=balRoute;
+  o.income=inc;o.ability=ability;o.raw=raw;o.amt=amt;o.upCap=baseCap+suppCap;
+
+  /* 限制项：取整前判定 + 容差比较 + 细分到哪一段 */
+  var eq=function(a,b){return Math.abs(a-b)<0.01};
+  var flags=[],zeroBal=(tBase===0&&tSupp===0);
+  if(zeroBal){
+    flags.push({t:'无可用余额',k:'err'});
+  }else{
+    if(eq(raw,balRoute)){
+      flags.push({t:'余额卡住',k:'warn'});
+      if(tBase>0)flags.push(eq(baseLoan,baseCap)?{t:'基本段顶上限',k:'warn'}:{t:'基本倍数不足',k:'ok'});
+      if(tSupp>0)flags.push(eq(suppLoan,suppCap)?{t:'补充段顶上限',k:'warn'}:{t:'补充倍数不足',k:'ok'});
+    }
+    if(eq(raw,ability))flags.push({t:'还款能力卡住',k:'warn'});
+  }
+  if(ability===0&&!zeroBal)flags.push({t:'还款能力为 0',k:'err'});
+  if(!flags.length)flags.push({t:'两路均未触顶',k:'ok'});
+  o.flags=flags;
+  return o;
+}
+
+/* ---------- 5. 格式化 ---------- */
+function wan(v){
+  var s=(v/10000).toFixed(4).replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'');
+  return s;
+}
+function yuan(v){return Number(v).toLocaleString('zh-CN',{maximumFractionDigits:2})}
+function ymTxt(m){return Math.floor(m/12)+' 岁'+(m%12?' '+m%12+' 个月':'')}
+function granTxt(g){return g===100?'百元':(g===10000?'万元':'千元')}
+function modeTxt(o){
+  if(o.mode==='cap')return '仅硬顶（排障口径）';
+  if(o.mode==='retire')return '仅退休表（排障口径）';
+  return o.trans?'过渡期（双路取短）':'非过渡期（硬顶）';
+}
+function kv(k,v){return '<div class="kv"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>'}
+
+/* ---------- 6. 输入读取与校验 ---------- */
+function toNum(s){
+  if(s==null)return NaN;
+  s=String(s).trim();
+  if(s==='')return NaN;
+  s=s.replace(/[\uFF01-\uFF5E]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)})
+     .replace(/[\u3000\s]/g,'');
+  s=s.replace(/,/g,'');
+  if(!/^-?\d+(\.\d+)?$/.test(s))return NaN;
+  return parseFloat(s);
+}
+function av(id,dft){
+  var v=toNum(el(id).value);
+  if(isNaN(v)||v<=0)return dft;
+  return v;
+}
+function reqNum(id,label,errs,opt){
+  var raw=String(el(id).value||'').trim();
+  if(raw===''){if(opt)return 0;errs.push('请填写'+label);return 0}
+  var v=toNum(raw);
+  if(isNaN(v)){errs.push(label+'只能填数字（支持千分位，不支持全角以外的符号）');return 0}
+  if(v<0){errs.push(label+'不能为负数');return 0}
+  if(v>1e10){errs.push(label+'数值过大，请核对');return 0}
+  return v;
+}
+function readCfg(){
+  var c={};
+  c.capMale=Math.round(av('qCapM',DEF.capMale));
+  c.capFemale=Math.round(av('qCapF',DEF.capFemale));
+  c.plus=Math.round(av('qPlus',DEF.plus));
+  c.longest=Math.round(av('qLongest',DEF.longest));
+  c.baseMult=av('qBaseMult',DEF.baseMult);
+  c.suppMult=av('qSuppMult',DEF.suppMult);
+  c.baseCapS=av('qBaseCapS',DEF.baseCapS)*10000;
+  c.baseCapC=av('qBaseCapC',DEF.baseCapC)*10000;
+  c.suppCapS=av('qSuppCapS',DEF.suppCapS)*10000;
+  c.suppCapC=av('qSuppCapC',DEF.suppCapC)*10000;
+  c.ratio=av('qRatio',DEF.ratio)/100;
+  c.houseBase=Math.round(av('qHouseBase',DEF.houseBase));
+  c.roundTo=G.round;
+  c.mode=G.mode;
+  c.accept=parseD(el('qAccept').value);
+  return c;
+}
+function showErr(list){
+  var h='<b>请先修正以下问题：</b><ul>';
+  for(var i=0;i<list.length;i++)h+='<li>'+list[i]+'</li>';
+  el('qErr').innerHTML=h+'</ul>';
+  el('qErr').classList.remove('hidden');
+  el('qErr').scrollIntoView({block:'center',behavior:'smooth'});
+}
+function hideErr(){el('qErr').classList.add('hidden')}
+
+/* ---------- 7. 渲染结果 ---------- */
+var rafId=0,tmId=0;
+function animNum(node,to,gran){
+  if(!node)return;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce||document.hidden){node.textContent=wan(to);return}
+  if(rafId)cancelAnimationFrame(rafId);
+  if(tmId)clearTimeout(tmId);
+  var t0=0,dur=520,done=false;
+  node.textContent=wan(0);
+  /* 兜底：若 rAF 未触发（后台页/省电模式），到点直接落终值 */
+  tmId=setTimeout(function(){if(!done){done=true;node.textContent=wan(to)}},dur+160);
+  function step(ts){
+    if(!t0)t0=ts;
+    var p=Math.min(1,(ts-t0)/dur),e=1-Math.pow(1-p,3);
+    /* 按取整粒度走数，避免中途出现 21.5564 这种脏数字 */
+    node.textContent=wan(Math.round(to*e/gran)*gran);
+    if(p<1){rafId=requestAnimationFrame(step)}
+    else{done=true;clearTimeout(tmId);node.textContent=wan(to)}
+  }
+  rafId=requestAnimationFrame(step);
+}
+function pathRow(k,v,max,on){
+  var w=Math.max(2,Math.min(100,v/max*100));
+  return '<div class="path'+(on?' on':'')+'"><span class="pk">'+k+'</span>'+
+    '<span class="pb"><i style="width:'+w.toFixed(1)+'%"></i></span>'+
+    '<span class="pv">'+wan(v)+' 万</span></div>';
+}
+function chLine(k,v,win){
+  return '<div class="ch-l'+(win?' win':'')+'"><span>'+k+'</span>'+
+    (v?'<span>'+v+'</span>':'')+'</div>';
+}
+function chRow(n,title,val,body,final){
+  return '<div class="ch'+(final?' final':'')+'">'+
+    '<div class="ch-h"><span class="ch-n">'+n+'</span>'+title+
+    '<span class="ch-v">'+val+'</span></div>'+
+    (body?'<div class="ch-b">'+body+'</div>':'')+'</div>';
+}
+
+function render(o,cf){
+  var ok=!o.err,over=o.errType==='overage';
+
+  /* 结论 */
+  if(ok){
+    animNum(el('qrAmt'),o.amt,cf.roundTo);
+    el('qrSub').innerHTML='= '+yuan(o.amt)+' 元 · 最终可贷 '+o.finalY+' 年 · 取整至'+granTxt(cf.roundTo);
+  }else if(over){
+    el('qrAmt').textContent='0';
+    el('qrSub').textContent=o.err;
+  }else{
+    el('qrAmt').textContent='—';
+    el('qrSub').textContent=o.err;
+  }
+
+  /* 限制项 */
+  var fh='';
+  if(over){
+    fh+='<span class="chip err">已超退休年龄</span><span class="chip err">额度 0</span>';
+  }else if(!ok){
+    fh+='<span class="chip err">无法测算</span>';
+  }else{
+    fh+='<span class="chip">'+modeTxt(o)+'</span>';
+    for(var i=0;i<o.flags.length;i++)fh+='<span class="chip '+o.flags[i].k+'">'+o.flags[i].t+'</span>';
+  }
+  el('qrFlags').innerHTML=fh;
+
+  /* 一、两路取低 */
+  var h0='';
+  if(ok){
+    var maxV=Math.max(o.balRoute,o.ability,1);
+    var winB=Math.abs(o.raw-o.balRoute)<0.01,winA=Math.abs(o.raw-o.ability)<0.01;
+    h0+=pathRow('余额路',o.balRoute,maxV,winB);
+    h0+=pathRow('还款能力',o.ability,maxV,winA);
+    var ft;
+    if(winB&&winA)ft='两路相等、同时卡住，取 <b>'+wan(o.raw)+' 万</b>';
+    else if(winB)ft='余额这一路更低，取 <b>'+wan(o.balRoute)+' 万</b>';
+    else ft='还款能力这一路更低，取 <b>'+wan(o.ability)+' 万</b>';
+    h0+='<div class="pf">'+ft+'</div>';
+  }else{
+    h0+='<div class="pf">'+(over?'已超退休年龄，不进入额度测算':'年限不可用，未进入额度对比')+'</div>';
+  }
+  el('qrPaths').innerHTML=h0;
+
+  /* 二、年限推导链 */
+  var h1='';
+  var b1='';
+  if(over){
+    b1+=chLine('法定退休日（已到/已过）',dstr(o.retireAt),true);
+    b1+=chLine('硬顶（'+o.capY+' 岁）',dstr(o.capEnd));
+  }else{
+    if(o.rEnd)b1+=chLine('退休路（退休 '+ymTxt(o.rm)+' ＋ '+cf.plus+' 年）',dstr(o.rEnd));
+    b1+=chLine('硬顶（'+o.capY+' 岁）',dstr(o.capEnd));
+    b1+=chLine('取短',dstr(o.end),true);
+  }
+  h1+=chRow(1,over?'年龄路（已过退休年龄）':'年龄路',
+    o.ageYraw!=null?Math.max(0,o.ageYraw)+' 年':'—',b1);
+
+  var b2='';
+  if(o.houseAge!=null){
+    b2+=chLine('房龄（受理年 − 竣工年）',o.houseAge+' 年');
+    b2+=chLine('房龄可贷',o.houseY+' 年',true);
+  }else{
+    b2+=chLine('一手房不计房龄，取最长年限','');
+  }
+  h1+=chRow(2,'房龄路',o.houseY+' 年',b2);
+
+  var b3=ok?chLine('年龄 '+o.ageY+' 年 · 房龄 '+o.houseY+' 年，取短',''):'';
+  h1+=chRow(3,'最终可贷年限',ok?o.finalY+' 年':'不可贷',b3,true);
+  el('qrChain').innerHTML=h1;
+
+  /* 三、额度明细 */
+  var h2='';
+  if(ok){
+    h2+=kv('总基本余额',yuan(o.tBase)+' 元'+(o.couple?' <em>含配偶</em>':''));
+    var n1=o.tBase>0?(Math.abs(o.baseLoan-o.baseCap)<0.01?' <em class="hit">已顶上限</em>':' <em>倍数未满</em>'):'';
+    h2+=kv('基本段可贷',wan(o.baseLoan)+' 万'+n1);
+    if(o.tSupp>0){
+      h2+=kv('总补充余额',yuan(o.tSupp)+' 元'+(o.couple?' <em>含配偶</em>':''));
+      var n2=Math.abs(o.suppLoan-o.suppCap)<0.01?' <em class="hit">已顶上限</em>':' <em>倍数未满</em>';
+      h2+=kv('补充段可贷',wan(o.suppLoan)+' 万'+n2);
+    }
+    h2+=kv('余额路合计',wan(o.balRoute)+' 万');
+    h2+=kv('总月收入合计',yuan(o.income)+' 元');
+    h2+=kv('还款能力限额',wan(o.ability)+' 万');
+    h2+=kv('原始额度（取整前）',wan(o.raw)+' 万');
+    h2+=kv('取整后额度',wan(o.amt)+' 万 <em>向下取整至'+granTxt(cf.roundTo)+'</em>');
+  }else{
+    h2+=kv('说明',over?'已到达/超过法定退休年龄，可贷额度按 0 计':'年限不可用，未进入额度计算');
+  }
+  el('qrKv2').innerHTML=h2;
+
+  /* 四、口径提示 */
+  var h3='';
+  h3+=kv('含补充总额度上限',wan(o.upCap)+' 万 <em>人工上浮基数</em>');
+  h3+=kv('余额路口径','基本×'+cf.baseMult+' 顶 '+wan(o.baseCap)+' 万 ＋ 补充×'+cf.suppMult+' 顶 '+wan(o.suppCap)+' 万');
+  h3+=kv('还款能力口径','月收入 × '+(Math.round(cf.ratio*1000)/10)+'% × 12 × 最终年限');
+  el('qrKv3').innerHTML=h3;
+
+  /* 非过渡期按硬顶取短时，把「退休＋N 年」的差异摆出来，避免与系统对不上说不清 */
+  var ref='';
+  if(ok&&!o.trans&&cf.mode==='dual'&&o.rEndAll&&cmp(o.rEndAll,o.end)<0){
+    ref='<b>退休＋'+cf.plus+' 年参考</b>：按退休表算的到期日是 '+dstr(o.rEndAll)+
+      '，比当前硬顶口径（'+dstr(o.end)+'）早 '+fullYears(o.rEndAll,o.end)+
+      ' 年。非过渡期按硬顶取短，未采用该到期日；如需按「退休＋'+cf.plus+' 年」测算，把年限口径切到「仅退休表」。';
+  }
+  el('qrRef').innerHTML=ref;
+  el('qrRef').classList.toggle('hidden',!ref);
+
+  el('qrSnap').textContent='参数快照 '+PARAM_VER+' · 受理日 '+dstr(cf.accept)+
+    ' · 口径 '+cf.mode+' · 男/女上限 '+cf.capMale+'/'+cf.capFemale+' 岁 · 退休后延 '+cf.plus+
+    ' 年 · 最长 '+cf.longest+' 年 · 倍数 '+cf.baseMult+'/'+cf.suppMult+' · 上限 '+
+    wan(cf.baseCapS)+'+'+wan(cf.suppCapS)+' 万（单人）· 系数 '+(Math.round(cf.ratio*1000)/10)+
+    '% · 房龄基准 '+cf.houseBase+' · 取整 '+granTxt(cf.roundTo);
+
+  var big=el('viewQRes').querySelector('.big');
+  if(big){big.classList.remove('rise');void big.offsetWidth;big.classList.add('rise')}
+}
+
+/* ---------- 8. 主流程 ---------- */
+function run(){
+  var errs=[],cf=readCfg();
+  var birth=parseD(el('qBirth').value);
+  if(!birth){
+    errs.push('请填写有效的出生日期（须精确到日，且为真实存在的日期）');
+  }else{
+    if(birth.y<1940)errs.push('出生日期超出合理范围');
+    if(cf.accept&&cmp(birth,cf.accept)>0)errs.push('出生日期不能晚于贷款受理日');
+  }
+  if(!cf.accept)errs.push('请填写有效的贷款受理日');
+
+  var needClass=G.gender==='female'&&birth&&inRange(birth,CLASS_RANGE);
+  var fclass=G.fclass;
+  if(needClass&&!fclass)errs.push('女性处于延迟退休过渡期，请选择参保身份（管理技术岗 / 工人岗）');
+  if(!needClass)fclass=null;
+
+  var income=reqNum('qIncome','公积金月收入',errs,false);
+  var baseBal=reqNum('qBase','基本公积金余额',errs,false);
+  var suppBal=reqNum('qSupp','补充公积金余额',errs,true);
+
+  var couple=G.couple===1,spInc=0,spBase=0,spSupp=0;
+  if(couple){
+    spInc=reqNum('qSpIncome','配偶公积金月收入',errs,false);
+    spBase=reqNum('qSpBase','配偶基本公积金余额',errs,false);
+    spSupp=reqNum('qSpSupp','配偶补充公积金余额',errs,true);
+  }
+
+  var built=0;
+  if(G.house==='old'){
+    var by=toNum(el('qBuilt').value);
+    if(isNaN(by))errs.push('二手房必须填写竣工年份');
+    else if(by<1900)errs.push('竣工年份过早，请核对');
+    else if(cf.accept&&by>cf.accept.y)errs.push('竣工年份不能晚于受理年份');
+    else built=Math.round(by);
+  }
+
+  if(errs.length){showErr(errs);return}
+  hideErr();
+
+  var o=compute({birth:birth,gender:G.gender,fclass:fclass,income:income,
+    baseBal:baseBal,suppBal:suppBal,couple:couple,spIncome:spInc,spBaseBal:spBase,
+    spSuppBal:spSupp,houseType:G.house,builtYear:built,accept:cf.accept},cf);
+  render(o,cf);
+  show('viewQRes');
+}
+
+/* ---------- 9. UI 交互 ---------- */
+function setOpts(id,v){
+  var bs=el(id).querySelectorAll('.opt');
+  for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].dataset.v===String(v));
+}
+function bindOpts(id,fn){
+  var bs=el(id).querySelectorAll('.opt');
+  for(var i=0;i<bs.length;i++){
+    bs[i].addEventListener('click',function(){setOpts(id,this.dataset.v);fn(this.dataset.v)});
+  }
+}
+function syncClass(){
+  var b=parseD(el('qBirth').value);
+  var need=G.gender==='female'&&b&&inRange(b,CLASS_RANGE);
+  el('rowFClass').classList.toggle('hidden',!need);
+  el('tipFClass').classList.toggle('hidden',!need);
+  if(!need){G.fclass=null;setOpts('qFClass',null)}
+}
+function syncCouple(){el('spouseBox').classList.toggle('hidden',G.couple!==1)}
+function syncHouse(){el('rowBuilt').classList.toggle('hidden',G.house!=='old')}
+
+function fillCfg(d){
+  el('qCapM').value=d.capMale;el('qCapF').value=d.capFemale;
+  el('qPlus').value=d.plus;el('qLongest').value=d.longest;
+  el('qBaseMult').value=d.baseMult;el('qSuppMult').value=d.suppMult;
+  el('qBaseCapS').value=d.baseCapS;el('qBaseCapC').value=d.baseCapC;
+  el('qSuppCapS').value=d.suppCapS;el('qSuppCapC').value=d.suppCapC;
+  el('qRatio').value=d.ratio;el('qHouseBase').value=d.houseBase;
+  G.round=d.roundTo;setOpts('qRound',d.roundTo);
+  G.mode=DEF_MODE;setOpts('qMode',DEF_MODE);
+}
+
+bindOpts('qGender',function(v){G.gender=v;syncClass()});
+bindOpts('qFClass',function(v){G.fclass=v});
+bindOpts('qCouple',function(v){G.couple=Number(v);syncCouple()});
+bindOpts('qHouse',function(v){G.house=v;syncHouse()});
+bindOpts('qMode',function(v){G.mode=v});
+bindOpts('qRound',function(v){G.round=Number(v)});
+
+/* 失焦回显：把 19580101 / 1958/1/1 / 全角数字 统一成 1958-01-01 */
+function normDate(id){
+  var n=el(id).value.trim()
+    .replace(/[\uFF01-\uFF5E]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)})
+    .replace(/[\u3000\s]/g,'');
+  var d=parseD(n);
+  if(d)el(id).value=dstr(d);
+}
+el('qBirth').addEventListener('change',function(){normDate('qBirth');syncClass()});
+el('qBirth').addEventListener('input',syncClass);
+el('qAccept').addEventListener('change',function(){normDate('qAccept')});
+el('goQuota').addEventListener('click',function(){hideErr();show('viewQuota')});
+el('bkQ').addEventListener('click',function(){show('viewForm')});
+el('bkQR').addEventListener('click',function(){show('viewQuota')});
+el('qrAgain').addEventListener('click',function(){show('viewQuota')});
+el('qCalc').addEventListener('click',run);
+el('qCfgToggle').addEventListener('click',function(){
+  var box=el('qCfgBox'),hidden=box.classList.toggle('hidden');
+  el('qCfgAr').textContent=hidden?'›':'▾';
+});
+el('qReset').addEventListener('click',function(){fillCfg(DEF)});
+
+/* ---------- 10. 初始化 ---------- */
+(function init(){
+  var t=today();
+  el('qAccept').value=t;
+  el('qBirth').value='1971-10-15';
+  el('qIncome').value='10000';
+  el('qBase').value='40000';
+  el('qSupp').value='';
+  el('qSpSupp').value='';
+  fillCfg(DEF);
+  syncClass();syncCouple();syncHouse();
+})();
+
+/* 供回归测试调用 */
+window.QuotaCore={compute:compute,retireMonths:retireMonths,fullYears:fullYears,
+  parseD:parseD,addMonths:addMonths,addYears:addYears,dstr:dstr,TRANS:TRANS};
 })();
 </script>
 </body>
